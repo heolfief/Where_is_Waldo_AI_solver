@@ -3,10 +3,10 @@ import os
 import shutil
 from PIL import Image
 
-WALDO_IMAGES_PATH = './original-images/'
+WALDO_IMAGES_PATH = 'Where_is_Waldo_AI_solver/original-images/'
 WALDO_IMAGES_FMT = '.jpg'
-WALDO_IMAGES_POSITIONS = 'waldo_positions.json'
-OUTPUT_DIR = 'output-images'
+WALDO_IMAGES_POSITIONS = 'Where_is_Waldo_AI_solver/scripts/waldo_positions.json'
+OUTPUT_DIR = 'output-DS-images'
 BLOCK_SIZE = 128
 NB_GRIDS = 4
 
