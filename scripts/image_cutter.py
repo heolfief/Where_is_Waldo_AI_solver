@@ -10,13 +10,14 @@ WALDO_IMAGES_FMT = '.jpg'
 WALDO_IMAGES_POSITIONS = 'Where_is_Waldo_AI_solver/scripts/waldo_positions.json'
 OUTPUT_DIR = 'output-DS-images'
 BLOCK_SIZE = 64
-NB_GRIDS = 4
+NB_GRIDS = 16
 
 class WaldoImage:
     """A class that stores a waldo image with its relevant characteristics"""
 
     REQUIRED_PERCENTAGE_WALDO = 75
-    PROBABILITY_KEEP_NOT_WALDO = 5
+    # The following is a probability, not a percentage
+    PROBABILITY_KEEP_NOT_WALDO = 0.0025
 
     def __init__(self, img_id:int, waldo_corner_1:tuple, waldo_corner_2:tuple):
         image_path = WALDO_IMAGES_PATH+str(img_id)+WALDO_IMAGES_FMT
@@ -64,7 +65,7 @@ class WaldoImage:
                         here_he_is = self.is_waldo_here(left, right, top, bottom)
 
                         # Save only a small amount of not waldo images
-                        if (not here_he_is and random.randint(0,100) <= WaldoImage.PROBABILITY_KEEP_NOT_WALDO) or here_he_is:
+                        if (not here_he_is and random.random() < WaldoImage.PROBABILITY_KEEP_NOT_WALDO) or here_he_is:
                             # Create a decent file name
                             filename = ('waldo' if here_he_is else 'notwaldo') + '-' + str(self.img_id) + '_' + str(left) + '_' + str(top) + '.png'
                             # Crop and save block
