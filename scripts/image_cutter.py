@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 from PIL import Image
+from tqdm import tqdm
 
 WALDO_IMAGES_PATH = 'Where_is_Waldo_AI_solver/original-images/'
 WALDO_IMAGES_FMT = '.jpg'
@@ -68,7 +69,7 @@ def main():
     shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
     os.mkdir(OUTPUT_DIR)
     # Process each waldo image
-    for waldo_image in waldo_images:
+    for waldo_image in tqdm(waldo_images):
         output_dir = OUTPUT_DIR+'/'+str(waldo_image.img_id)
         os.mkdir(output_dir)
         waldo_image.crop(output_dir, BLOCK_SIZE, NB_GRIDS)
