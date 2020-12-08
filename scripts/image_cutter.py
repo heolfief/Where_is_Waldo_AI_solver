@@ -3,6 +3,7 @@ import os
 import shutil
 from PIL import Image
 from tqdm import tqdm
+import random
 
 WALDO_IMAGES_PATH = 'Where_is_Waldo_AI_solver/original-images/'
 WALDO_IMAGES_FMT = '.jpg'
@@ -15,6 +16,7 @@ class WaldoImage:
     """A class that stores a waldo image with its relevant characteristics"""
 
     REQUIRED_PERCENTAGE_WALDO = 75
+    PROBABILITY_KEEP_NOT_WALDO = 5
 
     def __init__(self, img_id:int, waldo_corner_1:tuple, waldo_corner_2:tuple):
         image_path = WALDO_IMAGES_PATH+str(img_id)+WALDO_IMAGES_FMT
@@ -60,12 +62,15 @@ class WaldoImage:
                         bottom = top + block_size
                         # Is waldo in the current block ?
                         here_he_is = self.is_waldo_here(left, right, top, bottom)
-                        # Create a decent file name
-                        filename = ('waldo' if here_he_is else 'notwaldo') + '-' + str(self.img_id) + '_' + str(left) + '_' + str(top) + '.png'
-                        # Crop and save block
-                        cropped = self.img.crop((left, top, right, bottom))
-                        cropped.save(output_dir+'/'+filename)
 
+                        # Save only a small amount of not waldo images
+                        if (not here_he_is and random.randint(0,100) <= WaldoImage.PROBABILITY_KEEP_NOT_WALDO) or here_he_is:
+                            # Create a decent file name
+                            filename = ('waldo' if here_he_is else 'notwaldo') + '-' + str(self.img_id) + '_' + str(left) + '_' + str(top) + '.png'
+                            # Crop and save block
+                            cropped = self.img.crop((left, top, right, bottom))
+                            cropped.save(output_dir+'/'+filename)
+                
 
 def main():
     # Create a list of Waldo images objects
