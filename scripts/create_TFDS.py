@@ -30,7 +30,7 @@ class WaldoDataset(tfds.core.GeneratorBasedBuilder):
         description=_DESCRIPTION,
         features=tfds.features.FeaturesDict({
             # These are the features of your dataset like images, labels ...
-            'image': tfds.features.Image(),
+            'image': tfds.features.Image(shape=(64, 64, 3)),
             'label': tfds.features.ClassLabel(names=['notwaldo', 'waldo']),
         }),
         # If there's a common (input, target) tuple from the
