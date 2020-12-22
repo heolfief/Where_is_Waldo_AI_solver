@@ -39,7 +39,7 @@ class WaldoImage:
 
         #return self.waldo_corner_1[0]>=left and self.waldo_corner_1[1]>=top and self.waldo_corner_2[0]<=right and self.waldo_corner_2[1]<=bottom
         # Compute percentage of waldo in the input bounding box
-        return 100*float(union_area)/(BLOCK_SIZE*BLOCK_SIZE) >= WaldoImage.REQUIRED_PERCENTAGE_WALDO
+        return 100*float(union_area)/(waldo_area) >= WaldoImage.REQUIRED_PERCENTAGE_WALDO
 
     def crop(self, output_dir:str, block_size:int, grid_offset_divider:int):
         """Creates labeled sub-images of size block_size in directory output_dir.
