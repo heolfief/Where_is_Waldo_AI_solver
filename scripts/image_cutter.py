@@ -9,8 +9,13 @@ WALDO_IMAGES_PATH = 'Where_is_Waldo_AI_solver/original-images/'
 WALDO_IMAGES_FMT = '.jpg'
 WALDO_IMAGES_POSITIONS = 'Where_is_Waldo_AI_solver/scripts/waldo_positions.json'
 OUTPUT_DIR = 'output-DS-images'
+OUTPUT_DIR_TEST = OUTPUT_DIR + '/test'
+OUTPUT_DIR_TRAIN = OUTPUT_DIR + '/train'
 BLOCK_SIZE = 64
 NB_GRIDS = 16
+
+TEST_IMAGES = [14, 15, 17, 18, 19]
+
 
 class WaldoImage:
     """A class that stores a waldo image with its relevant characteristics"""
@@ -34,7 +39,7 @@ class WaldoImage:
 
         #return self.waldo_corner_1[0]>=left and self.waldo_corner_1[1]>=top and self.waldo_corner_2[0]<=right and self.waldo_corner_2[1]<=bottom
         # Compute percentage of waldo in the input bounding box
-        return 100*float(union_area)/waldo_area >= WaldoImage.REQUIRED_PERCENTAGE_WALDO
+        return 100*float(union_area)/(BLOCK_SIZE*BLOCK_SIZE) >= WaldoImage.REQUIRED_PERCENTAGE_WALDO
 
     def crop(self, output_dir:str, block_size:int, grid_offset_divider:int):
         """Creates labeled sub-images of size block_size in directory output_dir.
@@ -86,10 +91,15 @@ def main():
     # Clean output directory
     shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
     os.mkdir(OUTPUT_DIR)
+    os.mkdir(OUTPUT_DIR_TRAIN)
+    os.mkdir(OUTPUT_DIR_TEST)
     # Process each waldo image
     print("Warning, the following process may be quite long")
     for waldo_image in tqdm(waldo_images):
-        output_dir = OUTPUT_DIR+'/'+str(waldo_image.img_id)
+        if waldo_image.img_id in TEST_IMAGES:
+          output_dir = OUTPUT_DIR_TEST+'/'+str(waldo_image.img_id)
+        else:
+          output_dir = OUTPUT_DIR_TRAIN+'/'+str(waldo_image.img_id)
         os.mkdir(output_dir)
         waldo_image.crop(output_dir, BLOCK_SIZE, NB_GRIDS)
 
