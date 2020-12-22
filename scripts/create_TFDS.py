@@ -51,7 +51,8 @@ class WaldoDataset(tfds.core.GeneratorBasedBuilder):
 
     # TODO(waldo_dataset): Returns the Dict[split names, Iterator[Key, Example]]
     return {
-        'train': self._generate_examples(path=pathlib.Path(data_dir)),
+        'train': self._generate_examples(path=pathlib.Path(data_dir + 'train/')),
+        'test': self._generate_examples(path=pathlib.Path(data_dir + 'test/'))
     }
 
   def _generate_examples(self, path):
