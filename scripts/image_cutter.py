@@ -72,10 +72,17 @@ class WaldoImage:
                         # Save only a small amount of not waldo images
                         if (not here_he_is and random.random() < WaldoImage.PROBABILITY_KEEP_NOT_WALDO) or here_he_is:
                             # Create a decent file name
-                            filename = ('waldo' if here_he_is else 'notwaldo') + '-' + str(self.img_id) + '_' + str(left) + '_' + str(top) + '.png'
+                            filename = ('waldo' if here_he_is else 'notwaldo') + '-' + str(self.img_id) + '_' + str(left) + '_' + str(top)
                             # Crop and save block
                             cropped = self.img.crop((left, top, right, bottom))
-                            cropped.save(output_dir+'/'+filename)
+                            if(here_he_is):
+                              cropped.save(output_dir+'/'+filename+'1' + '.png')
+                              cropped.save(output_dir+'/'+filename+'2' + '.png')
+                              cropped.save(output_dir+'/'+filename+'3' + '.png')
+                              cropped.save(output_dir+'/'+filename+'4' + '.png')
+                              cropped.save(output_dir+'/'+filename+'5' + '.png')
+                            else:
+                              cropped.save(output_dir+'/'+filename + '.png')
                 
 
 def main():
