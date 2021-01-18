@@ -20,9 +20,9 @@ TEST_IMAGES = [14, 15, 17, 18, 19]
 class WaldoImage:
     """A class that stores a waldo image with its relevant characteristics"""
 
-    REQUIRED_PERCENTAGE_WALDO = 75
+    REQUIRED_PERCENTAGE_WALDO = 100
     # The following is a probability, not a percentage
-    PROBABILITY_KEEP_NOT_WALDO = 0.0025
+    PROBABILITY_KEEP_NOT_WALDO = 0.0002
 
     def __init__(self, img_id:int, waldo_corner_1:tuple, waldo_corner_2:tuple):
         image_path = WALDO_IMAGES_PATH+str(img_id)+WALDO_IMAGES_FMT
