@@ -9,22 +9,30 @@ WALDO_IMAGES_PATH = 'Where_is_Waldo_AI_solver/original-images/'
 WALDO_IMAGES_FMT = '.jpg'
 WALDO_IMAGES_POSITIONS = 'Where_is_Waldo_AI_solver/scripts/waldo_positions.json'
 OUTPUT_DIR = 'output-DS-images'
+OUTPUT_DIR_TEST = OUTPUT_DIR + '/test'
+OUTPUT_DIR_TRAIN = OUTPUT_DIR + '/train'
 BLOCK_SIZE = 64
 NB_GRIDS = 16
+
+TEST_IMAGES = [14, 15, 17, 18, 19]
+
 
 class WaldoImage:
     """A class that stores a waldo image with its relevant characteristics"""
 
-    REQUIRED_PERCENTAGE_WALDO = 75
+    REQUIRED_PERCENTAGE_WALDO = 100
     # The following is a probability, not a percentage
-    PROBABILITY_KEEP_NOT_WALDO = 0.0025
+    PROBABILITY_KEEP_NOT_WALDO_TRAIN = 0.0002
+    PROBABILITY_KEEP_NOT_WALDO_TEST = 0.0003
 
-    def __init__(self, img_id:int, waldo_corner_1:tuple, waldo_corner_2:tuple):
+    def __init__(self, img_id:int, waldo_corner_1:tuple, waldo_corner_2:tuple, test_img:bool):
         image_path = WALDO_IMAGES_PATH+str(img_id)+WALDO_IMAGES_FMT
+        random.seed(0)
         self.img_id = img_id
         self.img = Image.open(image_path)
         self.waldo_corner_1 = waldo_corner_1
         self.waldo_corner_2 = waldo_corner_2
+        self.probability_keep_not_waldo = WaldoImage.PROBABILITY_KEEP_NOT_WALDO_TRAIN if not(test_img) else WaldoImage.PROBABILITY_KEEP_NOT_WALDO_TEST 
 
     def is_waldo_here(self, left, right, top, bottom):
         # Compute area of union
@@ -34,7 +42,7 @@ class WaldoImage:
 
         #return self.waldo_corner_1[0]>=left and self.waldo_corner_1[1]>=top and self.waldo_corner_2[0]<=right and self.waldo_corner_2[1]<=bottom
         # Compute percentage of waldo in the input bounding box
-        return 100*float(union_area)/waldo_area >= WaldoImage.REQUIRED_PERCENTAGE_WALDO
+        return 100*float(union_area)/(waldo_area) >= WaldoImage.REQUIRED_PERCENTAGE_WALDO
 
     def crop(self, output_dir:str, block_size:int, grid_offset_divider:int):
         """Creates labeled sub-images of size block_size in directory output_dir.
@@ -65,7 +73,7 @@ class WaldoImage:
                         here_he_is = self.is_waldo_here(left, right, top, bottom)
 
                         # Save only a small amount of not waldo images
-                        if (not here_he_is and random.random() < WaldoImage.PROBABILITY_KEEP_NOT_WALDO) or here_he_is:
+                        if (not here_he_is and random.random() < self.probability_keep_not_waldo) or here_he_is:
                             # Create a decent file name
                             filename = ('waldo' if here_he_is else 'notwaldo') + '-' + str(self.img_id) + '_' + str(left) + '_' + str(top) + '.png'
                             # Crop and save block
@@ -81,15 +89,20 @@ def main():
         data = json.load(json_file)
         # Create a WaldoImage object for each entry in the json file
         for pos in data:
-            waldo_images.append(WaldoImage(pos['image'], pos['corner_1'], pos['corner_2']))
+            waldo_images.append(WaldoImage(pos['image'], pos['corner_1'], pos['corner_2'], pos['image'] in TEST_IMAGES))
 
     # Clean output directory
     shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
     os.mkdir(OUTPUT_DIR)
+    os.mkdir(OUTPUT_DIR_TRAIN)
+    os.mkdir(OUTPUT_DIR_TEST)
     # Process each waldo image
     print("Warning, the following process may be quite long")
     for waldo_image in tqdm(waldo_images):
-        output_dir = OUTPUT_DIR+'/'+str(waldo_image.img_id)
+        if waldo_image.img_id in TEST_IMAGES:
+          output_dir = OUTPUT_DIR_TEST+'/'+str(waldo_image.img_id)
+        else:
+          output_dir = OUTPUT_DIR_TRAIN+'/'+str(waldo_image.img_id)
         os.mkdir(output_dir)
         waldo_image.crop(output_dir, BLOCK_SIZE, NB_GRIDS)
 
