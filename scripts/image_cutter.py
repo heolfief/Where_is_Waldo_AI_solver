@@ -26,6 +26,7 @@ class WaldoImage:
 
     def __init__(self, img_id:int, waldo_corner_1:tuple, waldo_corner_2:tuple):
         image_path = WALDO_IMAGES_PATH+str(img_id)+WALDO_IMAGES_FMT
+        random.seed(10)
         self.img_id = img_id
         self.img = Image.open(image_path)
         self.waldo_corner_1 = waldo_corner_1
