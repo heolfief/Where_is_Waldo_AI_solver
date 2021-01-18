@@ -22,15 +22,17 @@ class WaldoImage:
 
     REQUIRED_PERCENTAGE_WALDO = 100
     # The following is a probability, not a percentage
-    PROBABILITY_KEEP_NOT_WALDO = 0.0002
+    PROBABILITY_KEEP_NOT_WALDO_TRAIN = 0.0002
+    PROBABILITY_KEEP_NOT_WALDO_TEST = 0.0003
 
-    def __init__(self, img_id:int, waldo_corner_1:tuple, waldo_corner_2:tuple):
+    def __init__(self, img_id:int, waldo_corner_1:tuple, waldo_corner_2:tuple, test_img:bool):
         image_path = WALDO_IMAGES_PATH+str(img_id)+WALDO_IMAGES_FMT
         random.seed(10)
         self.img_id = img_id
         self.img = Image.open(image_path)
         self.waldo_corner_1 = waldo_corner_1
         self.waldo_corner_2 = waldo_corner_2
+        self.probability_keep_not_waldo = WaldoImage.PROBABILITY_KEEP_NOT_WALDO_TRAIN if not(test_img) else WaldoImage.PROBABILITY_KEEP_NOT_WALDO_TEST 
 
     def is_waldo_here(self, left, right, top, bottom):
         # Compute area of union
@@ -71,7 +73,7 @@ class WaldoImage:
                         here_he_is = self.is_waldo_here(left, right, top, bottom)
 
                         # Save only a small amount of not waldo images
-                        if (not here_he_is and random.random() < WaldoImage.PROBABILITY_KEEP_NOT_WALDO) or here_he_is:
+                        if (not here_he_is and random.random() < self.probability_keep_not_waldo) or here_he_is:
                             # Create a decent file name
                             filename = ('waldo' if here_he_is else 'notwaldo') + '-' + str(self.img_id) + '_' + str(left) + '_' + str(top) + '.png'
                             # Crop and save block
@@ -87,7 +89,7 @@ def main():
         data = json.load(json_file)
         # Create a WaldoImage object for each entry in the json file
         for pos in data:
-            waldo_images.append(WaldoImage(pos['image'], pos['corner_1'], pos['corner_2']))
+            waldo_images.append(WaldoImage(pos['image'], pos['corner_1'], pos['corner_2'], pos['image'] in TEST_IMAGES))
 
     # Clean output directory
     shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
